@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "philiprehberger-file-organizer"
-version = "0.1.0"
+version = "0.1.1"
 description = "Rule-based file sorting engine with pattern matching and dry run support"
 readme = "README.md"
 license = "MIT"
@@ -15,6 +15,12 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Typing :: Typed",
 ]
+
+[project.urls]
+Homepage = "https://github.com/philiprehberger/py-file-organizer#readme"
+Repository = "https://github.com/philiprehberger/py-file-organizer"
+Issues = "https://github.com/philiprehberger/py-file-organizer/issues"
+Changelog = "https://github.com/philiprehberger/py-file-organizer/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/philiprehberger_file_organizer"]
