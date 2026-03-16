@@ -60,6 +60,14 @@ organizer = Organizer(rules=rules, conflict="skip")      # skip existing
 organizer = Organizer(rules=rules, conflict="overwrite")  # overwrite existing
 ```
 
+
+## Development
+
+```bash
+pip install -e .
+python -m pytest tests/ -v
+```
+
 ## License
 
 MIT
