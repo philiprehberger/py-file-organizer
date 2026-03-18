@@ -6,7 +6,7 @@
 
 Rule-based file sorting engine with pattern matching and dry run support.
 
-## Install
+## Installation
 
 ```bash
 pip install philiprehberger-file-organizer
@@ -60,6 +60,15 @@ organizer = Organizer(rules=rules, conflict="skip")      # skip existing
 organizer = Organizer(rules=rules, conflict="overwrite")  # overwrite existing
 ```
 
+
+## API
+
+| Function / Class | Description |
+|------------------|-------------|
+| `Organizer(rules, conflict, recursive)` | Rule-based file organizer with `preview()`, `organize()`, and `undo()` methods |
+| `Rule(destination, extensions, pattern, ...)` | A rule that matches files by extension, pattern, size, or age |
+| `MoveAction` | Describes a planned or executed file move (source, destination, size) |
+| `OrganizeReport` | Result of an organize operation with `actions`, `skipped`, `errors`, `total_moved`, `total_size` |
 
 ## Development
 
