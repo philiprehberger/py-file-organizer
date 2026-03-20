@@ -39,7 +39,7 @@ print(f"Moved {report.total_moved} files ({report.total_size} bytes)")
 restored = Organizer.undo("~/Downloads")
 ```
 
-## Rule Options
+### Rule Options
 
 | Option | Description |
 |--------|-------------|
@@ -52,14 +52,13 @@ restored = Organizer.undo("~/Downloads")
 | `newer_than_days` | Match files newer than N days |
 | `predicate` | Custom matching function |
 
-## Conflict Resolution
+### Conflict Resolution
 
 ```python
 organizer = Organizer(rules=rules, conflict="rename")   # default: adds (1), (2)...
 organizer = Organizer(rules=rules, conflict="skip")      # skip existing
 organizer = Organizer(rules=rules, conflict="overwrite")  # overwrite existing
 ```
-
 
 ## API
 
