@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/py-file-organizer/actions/workflows/publish.yml/badge.svg)](https://github.com/philiprehberger/py-file-organizer/actions/workflows/publish.yml)
 [![PyPI version](https://img.shields.io/pypi/v/philiprehberger-file-organizer.svg)](https://pypi.org/project/philiprehberger-file-organizer/)
 [![License](https://img.shields.io/github/license/philiprehberger/py-file-organizer)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Rule-based file sorting engine with pattern matching and dry run support.
 
