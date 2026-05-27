@@ -108,6 +108,9 @@ def _resolve_conflict(dest: Path, strategy: ConflictStrategy) -> Path | None:
         counter += 1
 
 
+MoveHook = Callable[[MoveAction, Rule], None]
+
+
 class Organizer:
     """Rule-based file organizer."""
 
@@ -120,6 +123,21 @@ class Organizer:
         self.rules = rules
         self.conflict = conflict
         self.recursive = recursive
+        self._on_move_hooks: list[MoveHook] = []
+
+    def on_move(self, hook: MoveHook) -> MoveHook:
+        """Register a callback fired after each successful move.
+
+        The hook receives ``(action, rule)`` where ``action`` is the
+        :class:`MoveAction` (with resolved source and destination paths) and
+        ``rule`` is the :class:`Rule` that matched. Multiple hooks fire in
+        registration order. Hook exceptions are recorded in the report's
+        ``errors`` list but do not stop subsequent moves.
+
+        Returns the hook so this can be used as a decorator.
+        """
+        self._on_move_hooks.append(hook)
+        return hook
 
     def _iter_files(self, directory: str | Path) -> list[Path]:
         root = Path(directory).expanduser().resolve()
@@ -195,6 +213,11 @@ class Organizer:
                             "source": str(file_path),
                             "destination": str(resolved),
                         })
+                        for hook in self._on_move_hooks:
+                            try:
+                                hook(action, rule)
+                            except Exception as hook_exc:
+                                report.errors.append((file_path, f"on_move hook: {hook_exc}"))
                     except OSError as e:
                         report.errors.append((file_path, str(e)))
                     matched = True

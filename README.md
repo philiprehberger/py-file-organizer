@@ -4,6 +4,8 @@
 [![PyPI version](https://img.shields.io/pypi/v/philiprehberger-file-organizer.svg)](https://pypi.org/project/philiprehberger-file-organizer/)
 [![Last updated](https://img.shields.io/github/last-commit/philiprehberger/py-file-organizer)](https://github.com/philiprehberger/py-file-organizer/commits/main)
 
+![philiprehberger-file-organizer](https://raw.githubusercontent.com/philiprehberger/py-file-organizer/main/package-card.webp)
+
 Rule-based file sorting engine with pattern matching and dry run support.
 
 ## Installation
@@ -52,6 +54,20 @@ restored = Organizer.undo("~/Downloads")
 | `newer_than_days` | Match files newer than N days |
 | `predicate` | Custom matching function |
 
+## Move Hooks
+
+Register callbacks that fire after each successful move. Useful for logging, checksums, notifications, or kicking off downstream pipelines without subclassing.
+
+```python
+organizer = Organizer(rules=rules)
+
+@organizer.on_move
+def log_move(action, rule):
+    print(f"moved {action.source.name} -> {action.destination} (rule #{action.rule_index})")
+```
+
+Hooks fire only on `organize()` (not `preview()`), and only after the file has actually moved. Hook exceptions are captured in `report.errors`.
+
 ## Conflict Resolution
 
 ```python
@@ -65,6 +81,7 @@ organizer = Organizer(rules=rules, conflict="overwrite")  # overwrite existing
 | Function / Class | Description |
 |------------------|-------------|
 | `Organizer(rules, conflict, recursive)` | Rule-based file organizer with `preview()`, `organize()`, and `undo()` methods |
+| `Organizer.on_move(hook)` | Register a `(action, rule) -> None` callback fired after each successful move |
 | `Rule(destination, extensions, pattern, ...)` | A rule that matches files by extension, pattern, size, or age |
 | `MoveAction` | Describes a planned or executed file move (source, destination, size) |
 | `OrganizeReport` | Result of an organize operation with `actions`, `skipped`, `errors`, `total_moved`, `total_size` |

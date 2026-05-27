@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0 (2026-05-26)
+
+- Add `Organizer.on_move(hook)` callback that fires `(action, rule)` after each successful move — extension point for logging, checksums, or downstream pipelines without subclassing
+- Add package-card image to README
+
 ## 0.1.9 (2026-03-31)
 
 - Standardize README to 3-badge format with emoji Support section
@@ -10,15 +15,15 @@
 
 - Add pytest and mypy configuration to pyproject.toml
 
-## 0.1.5
+## 0.1.5 (2026-03-18)
 
 - Add basic import test
 
-## 0.1.4
+## 0.1.4 (2026-03-15)
 
 - Add Development section to README
 
-## 0.1.1
+## 0.1.1 (2026-03-12)
 
 - Add project URLs to pyproject.toml
 
