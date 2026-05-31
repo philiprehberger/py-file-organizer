@@ -41,6 +41,29 @@ print(f"Moved {report.total_moved} files ({report.total_size} bytes)")
 restored = Organizer.undo("~/Downloads")
 ```
 
+### Testing rules and bulk-adding
+
+Use `Rule.matches(path)` to evaluate a rule against any path in isolation — handy for unit tests, REPL exploration, or debugging why a file is (or isn't) matched. Name-based checks (`extensions`, `pattern`, `name_contains`) work on any path string without touching disk; size and age filters require the file to exist.
+
+```python
+rule = Rule(pattern="invoice_*.pdf", destination="~/Documents/Invoices")
+
+rule.matches("invoice_2026.pdf")   # True
+rule.matches("photo.jpg")          # False
+```
+
+Use `Organizer.add_rules([...])` to append rules in bulk. Returns the organizer so calls can be chained.
+
+```python
+organizer = Organizer(rules=[])
+organizer.add_rules([
+    Rule(extensions=[".pdf"], destination="~/Documents"),
+    Rule(extensions=[".jpg", ".png"], destination="~/Pictures"),
+]).add_rules([
+    Rule(pattern="invoice_*", destination="~/Documents/Invoices"),
+])
+```
+
 ## Rule Options
 
 | Option | Description |
@@ -82,7 +105,9 @@ organizer = Organizer(rules=rules, conflict="overwrite")  # overwrite existing
 |------------------|-------------|
 | `Organizer(rules, conflict, recursive)` | Rule-based file organizer with `preview()`, `organize()`, and `undo()` methods |
 | `Organizer.on_move(hook)` | Register a `(action, rule) -> None` callback fired after each successful move |
+| `Organizer.add_rules(rules)` | Append multiple rules at once; returns the organizer for chaining |
 | `Rule(destination, extensions, pattern, ...)` | A rule that matches files by extension, pattern, size, or age |
+| `Rule.matches(path)` | Return `True` if the rule matches the given path — useful for testing rules in isolation |
 | `MoveAction` | Describes a planned or executed file move (source, destination, size) |
 | `OrganizeReport` | Result of an organize operation with `actions`, `skipped`, `errors`, `total_moved`, `total_size` |
 

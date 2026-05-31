@@ -28,33 +28,52 @@ class Rule:
     name_contains: str | None = None
     predicate: Callable[[Path], bool] | None = None
 
-    def matches(self, path: Path) -> bool:
-        if not path.is_file():
+    def matches(self, path: str | Path) -> bool:
+        """Return True if this rule's pattern matches *path*.
+
+        Public counterpart to the internal match check used by Organizer.
+        Name-based checks (``extensions``, ``pattern``, ``name_contains``)
+        work on any path string. Stat-based checks (``larger_than``,
+        ``smaller_than``, ``older_than_days``, ``newer_than_days``) and the
+        custom ``predicate`` require the path to exist on disk; if the path
+        is missing those filters return False.
+        """
+        p = Path(path)
+        # Name-based checks first (work without disk access).
+        if self.extensions and p.suffix.lower() not in [e.lower() for e in self.extensions]:
             return False
-        if self.extensions and path.suffix.lower() not in [e.lower() for e in self.extensions]:
+        if self.pattern and not fnmatch.fnmatch(p.name, self.pattern):
             return False
-        if self.pattern and not fnmatch.fnmatch(path.name, self.pattern):
+        if self.name_contains and self.name_contains.lower() not in p.name.lower():
             return False
-        if self.name_contains and self.name_contains.lower() not in path.name.lower():
-            return False
-        try:
-            stat = path.stat()
-        except OSError:
-            return False
-        if self.larger_than is not None and stat.st_size < self.larger_than:
-            return False
-        if self.smaller_than is not None and stat.st_size > self.smaller_than:
-            return False
-        now = datetime.now().timestamp()
-        if self.older_than_days is not None:
-            threshold = now - (self.older_than_days * 86400)
-            if stat.st_mtime > threshold:
+        # Stat-based checks require the file to exist.
+        needs_stat = (
+            self.larger_than is not None
+            or self.smaller_than is not None
+            or self.older_than_days is not None
+            or self.newer_than_days is not None
+        )
+        if needs_stat or p.exists():
+            if not p.is_file():
                 return False
-        if self.newer_than_days is not None:
-            threshold = now - (self.newer_than_days * 86400)
-            if stat.st_mtime < threshold:
+            try:
+                stat = p.stat()
+            except OSError:
                 return False
-        if self.predicate and not self.predicate(path):
+            if self.larger_than is not None and stat.st_size < self.larger_than:
+                return False
+            if self.smaller_than is not None and stat.st_size > self.smaller_than:
+                return False
+            now = datetime.now().timestamp()
+            if self.older_than_days is not None:
+                threshold = now - (self.older_than_days * 86400)
+                if stat.st_mtime > threshold:
+                    return False
+            if self.newer_than_days is not None:
+                threshold = now - (self.newer_than_days * 86400)
+                if stat.st_mtime < threshold:
+                    return False
+        if self.predicate and not self.predicate(p):
             return False
         return True
 
@@ -124,6 +143,12 @@ class Organizer:
         self.conflict = conflict
         self.recursive = recursive
         self._on_move_hooks: list[MoveHook] = []
+
+    def add_rules(self, rules: list[Rule]) -> Organizer:
+        """Add multiple rules at once. Returns self for chaining."""
+        for rule in rules:
+            self.rules.append(rule)
+        return self
 
     def on_move(self, hook: MoveHook) -> MoveHook:
         """Register a callback fired after each successful move.

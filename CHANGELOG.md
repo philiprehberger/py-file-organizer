@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0 (2026-05-30)
+
+- Add `Rule.matches()` public test method for evaluating rules in isolation
+- Add `Organizer.add_rules()` convenience for bulk-adding rules
+
 ## 0.2.0 (2026-05-26)
 
 - Add `Organizer.on_move(hook)` callback that fires `(action, rule)` after each successful move — extension point for logging, checksums, or downstream pipelines without subclassing
